@@ -1,0 +1,38 @@
+################################################################################
+#   CONFIGURATIONS FOR FITTING FaIRGP
+################################################################################
+
+# DATASET
+dataset:
+  # Path to data directory
+  dirpath: data/
+
+  # Keys of scenarios to load for training (commment scenarios to remove them)
+  keys:
+    - historical
+    - ssp126
+    - ssp245
+    - ssp370
+    - ssp585
+
+
+response_var: pr
+
+# MODEL SPECIFICATIONS
+model:
+
+
+
+# TRAINING
+training:
+  # Number of training epochs
+  n_epochs: 60
+  # n_epochs: 2
+
+  # Learning rate
+  lr: 0.1
+
+
+
+# EVALUATION
+evaluation:
