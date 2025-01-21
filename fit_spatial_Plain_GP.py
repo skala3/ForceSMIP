@@ -58,7 +58,7 @@ def make_model(cfg, data):
     X = data.scenarios.glob_inputs[:, 1:]
     mu, sigma = X.mean(dim=0), X.std(dim=0)
     X = (X - mu) / sigma
-    y = data.scenarios.tas.view(X.size(0), -1)
+    y = data.scenarios.response_var.view(X.size(0), -1)
     mu_targets, sigma_targets = y.mean(dim=0), y.std(dim=0)
     y = (y - mu_targets) / sigma_targets
     model = MultiExactGP(X=X,

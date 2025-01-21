@@ -44,19 +44,19 @@ def load_response_dataset(filepath):
     return outputs
 
 
-def make_input_array(xr_input, xr_output):
+def make_input_array(xr_input, xr_output, dep_var_name):
     latitude = xr_input.latitude
     longitude = xr_input.longitude
     try:
         xr_input['CO2'] = xr_input.CO2.expand_dims(latitude=latitude, longitude=longitude).transpose('time', 'latitude', 'longitude')
         xr_input['CH4'] = xr_input.CH4.expand_dims(latitude=latitude, longitude=longitude).transpose('time', 'latitude', 'longitude')
-        xr_input['tas'] = xr_output.tas.mean(['member'])
+        xr_input[dep_var_name] = xr_output[dep_var_name].mean(['member'])
     except ValueError:
         pass
     return xr_input
 
 
-def extract_arrays(xr_input):
+def extract_arrays(xr_input, dep_var_name):
     # Extract time steps, lat and lon arrays
     time = xr_input.time.values
     lat = xr_input.latitude.values
@@ -82,19 +82,22 @@ def extract_arrays(xr_input):
     glob_emissions = np.stack([CO2_glob_emissions, CH4_glob_emissions, SO2_glob_emissions, BC_glob_emissions])
 
     # Compute spatial temperature anomaly
-    tas = xr_input.tas.data
-    return time, lat, lon, cum_emissions, emissions, glob_emissions, tas
+    #tas = xr_input.tas.data
+    dep_var = xr_input[dep_var_name].data
+
+    return time, lat, lon, cum_emissions, emissions, glob_emissions, dep_var
 
 
-def make_scenario(key, inputs, outputs, hist_scenario=None):
-    xr_input = make_input_array(inputs[key], outputs[key])
-    time, lat, lon, _, emission, glob_emissions, tas = extract_arrays(xr_input)
+def make_scenario(key, inputs, outputs, hist_scenario=None, dep_var_name=None):
+    xr_input = make_input_array(inputs[key], outputs[key], dep_var_name)
+    time, lat, lon, _, emission, glob_emissions, dep_var = extract_arrays(xr_input, dep_var_name)
     scenario = Scenario(name=key,
                         timesteps=torch.from_numpy(time).float(),
                         lat=torch.from_numpy(lat).float(),
                         lon=torch.from_numpy(lon).float(),
                         emissions=torch.from_numpy(emission).float().permute(1, 2, 3, 0),
-                        tas=torch.from_numpy(tas).float(),
+                        dep_var=torch.from_numpy(dep_var).float(),
                         hist_scenario=hist_scenario)
     scenario.glob_emissions = torch.from_numpy(glob_emissions).float().T
+
     return scenario

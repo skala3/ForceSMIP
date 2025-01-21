@@ -15,7 +15,7 @@ class SpatialThermalBoxesGP(GP):
 
         # Setup mean, kernel and likelihood
         self.pattern_scaling = self._fit_pattern_scaling()
-        self.beta = torch.from_numpy(self.pattern_scaling.coef_).float().reshape(self.train_scenarios.tas.size(1), self.train_scenarios.tas.size(2))
+        self.beta = torch.from_numpy(self.pattern_scaling.coef_).float().reshape(self.train_scenarios.response_var.size(1), self.train_scenarios.response_var.size(2))
         self.kernel = kernel
         self.likelihood = likelihood
 
@@ -25,7 +25,7 @@ class SpatialThermalBoxesGP(GP):
         self.register_buffer('d', torch.from_numpy(d).float())
 
         self.train_means = self._compute_means(scenario_dataset)
-        train_targets = {name: scenario_dataset[name].tas - self.train_means[name]
+        train_targets = {name: scenario_dataset[name].response_var - self.train_means[name]
                          for name in scenario_dataset.scenarios.keys()}
         train_targets = torch.cat([v for v in train_targets.values()]).div(self.beta.unsqueeze(0))
         self.register_buffer('mu_targets', train_targets.mean(dim=0))
@@ -33,11 +33,11 @@ class SpatialThermalBoxesGP(GP):
         self.register_buffer('train_targets', (train_targets - self.mu_targets) / self.sigma_targets)
 
     def _fit_pattern_scaling(self):
-        all_tas = self.train_scenarios.tas
+        all_response_var = self.train_scenarios.response_var
         wlat = torch.cos(torch.deg2rad(self.train_scenarios[0].lat)).clip(min=torch.finfo(torch.float64).eps)[:, None]
-        glob_tas = torch.sum(all_tas * wlat, dim=(1, 2)) / (all_tas.size(2) * wlat.sum())
+        glob_response_var = torch.sum(all_response_var * wlat, dim=(1, 2)) / (all_response_var.size(2) * wlat.sum())
         pattern_scaling = LinearRegression()
-        pattern_scaling.fit(glob_tas[:, None], all_tas.reshape(all_tas.size(0), -1))
+        pattern_scaling.fit(glob_response_var[:, None], all_response_var.reshape(all_response_var.size(0), -1))
         return pattern_scaling
 
     def _compute_means(self, scenario_dataset):

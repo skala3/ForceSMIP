@@ -89,7 +89,7 @@ def make_spatial_input_array(xr_input, xr_output):
     longitude = xr_input.longitude
     xr_input['CO2'] = xr_input.CO2.expand_dims(latitude=latitude, longitude=longitude).transpose('time', 'latitude', 'longitude')
     xr_input['CH4'] = xr_input.CH4.expand_dims(latitude=latitude, longitude=longitude).transpose('time', 'latitude', 'longitude')
-    xr_input['pr'] = xr_output.pr.mean(['member'])
+    xr_input[dep_var_name] = xr_output[dep_var_name].mean(['member'])
     return xr_input
 
 
@@ -114,9 +114,10 @@ def extract_spatial_arrays(xr_input):
     # emissions = np.stack([CO2_emissions, CH4_emissions, SO2_emissions, BC_emissions])[:, :, :10, :10]
 
     # Compute spatial temperature anomaly
-    tas = xr_input.tas.data
+    #tas = xr_input.tas.data
+    dep_var = xr_input[dep_var_name].data
     # tas = xr_input.tas.data[:, :10, :10]
-    return time, lat, lon, cum_emissions, emissions, tas
+    return time, lat, lon, cum_emissions, emissions, dep_var
 
 
 def make_spatial_scenario(inputs, outputs, name, hist_scenario=None):

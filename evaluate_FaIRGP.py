@@ -58,7 +58,8 @@ def main(args, cfg):
                                test_data=test_data,
                                model=model,
                                plot=args['--plot'],
-                               output_dir=fold_output_dir)
+                               output_dir=fold_output_dir,
+                               cfg=cfg)
         scores.append(fold_scores)
 
         # Dump scores
@@ -100,7 +101,7 @@ def predict(model, test_data):
     return noisy_test_posterior
 
 
-def evaluate(posterior_dist, test_data, model, plot, output_dir):
+def evaluate(posterior_dist, test_data, model, plot, output_dir, cfg):
     # Create output directory if doesn't exists
     os.makedirs(output_dir, exist_ok=True)
 

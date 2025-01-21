@@ -21,7 +21,7 @@ field_names = ['scenarios',
 Data = namedtuple(typename='Data', field_names=field_names, defaults=(None,) * len(field_names))
 
 
-def make_data(cfg):
+def make_data(cfg, sample_size=10):
     """Prepares and formats data to be used for training and testing.
     Returns all data objects needed to run experiment encapsulated in a namedtuple.
     Returned elements are not comprehensive and minimially needed to run experiments,
@@ -40,12 +40,26 @@ def make_data(cfg):
     input_xarrays = {key: load_emissions_dataset(filepath) for (key, filepath) in inputs_filepaths.items()}
     output_xarrays = {key: load_response_dataset(filepath) for (key, filepath) in outputs_filepaths.items()}
 
+    '''
+    # Limit to 1000 samples
+    for key in input_xarrays:
+        input_xarrays[key] = input_xarrays[key].isel(time=slice(0, sample_size))
+    for key in output_xarrays:
+        output_xarrays[key] = output_xarrays[key].isel(time=slice(0, sample_size))
+
+    # Load historical emissions and temperature response xarray
+    input_xarrays.update(historical=load_emissions_dataset(os.path.join(cfg['dataset']['dirpath'], 'inputs_historical.nc')).isel(time=slice(0, sample_size)))
+    output_xarrays.update(historical=load_response_dataset(os.path.join(cfg['dataset']['dirpath'], 'outputs_historical.nc')).isel(time=slice(0, sample_size)))
+
+    '''
     # Load historical emissions and temperature response xarray
     input_xarrays.update(historical=load_emissions_dataset(os.path.join(cfg['dataset']['dirpath'], 'inputs_historical.nc')))
     output_xarrays.update(historical=load_response_dataset(os.path.join(cfg['dataset']['dirpath'], 'outputs_historical.nc')))
+    
+    dep_var_name = cfg['response_var']
 
     # Create scenario instances
-    hist_scenario = make_scenario(key='historical', inputs=input_xarrays, outputs=output_xarrays)
+    hist_scenario = make_scenario(key='historical', inputs=input_xarrays, outputs=output_xarrays,  dep_var_name=dep_var_name)
     scenarios = dict()
     for key in cfg['dataset']['keys']:
         if key == 'historical':
@@ -54,7 +68,8 @@ def make_data(cfg):
             scenario = make_scenario(key=key,
                                      inputs=input_xarrays,
                                      outputs=output_xarrays,
-                                     hist_scenario=hist_scenario)
+                                     hist_scenario=hist_scenario,
+                                     dep_var_name=dep_var_name)
         scenarios[key] = scenario
 
     # Encapsulate into scenario dataset

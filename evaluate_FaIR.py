@@ -34,7 +34,7 @@ def main(args, cfg):
             continue
         else:
             fair_tas = run_fair(scenario=scenario, cfg=cfg)
-            scenario_score = evaluate(fair_tas=fair_tas, groundtruth_tas=scenario.tas)
+            scenario_score = evaluate(fair_tas=fair_tas, groundtruth_tas=scenario.response_var)
             scores.append(scenario_score)
 
     # Dump scores
@@ -46,6 +46,7 @@ def run_fair(scenario, cfg):
     res = fair.run(time=scenario.full_timesteps.numpy(),
                    emission=scenario.full_emissions.T.numpy(),
                    base_kwargs=base_kwargs)
+    print("*******************", )
     tas = scenario.trim_hist(res['T'])
     return tas
 

@@ -3,6 +3,7 @@ import numpy as np
 from scipy.stats import pearsonr
 
 
+
 def compute_scores(posterior_dist, test_data):
     """Computes prediction scores
     Args:
@@ -15,11 +16,23 @@ def compute_scores(posterior_dist, test_data):
     posterior_mean = posterior_dist.mean.cpu()
 
     # Compute metrics over all predictions
+    #dep_var_name = cfg['response_var']
+
+    #print("**********", type(test_data))
+    #print(f"Available keys in test_data: {list(test_data.keys())}")
+    #print(f"Key from cfg['response_var']: {dep_vsar_name}")
+
+    scores_deterministic = compute_deterministic_metrics(posterior_mean, test_data.response_var)
+    scores_probabilistic = compute_probabilistic_metrics(posterior_dist, test_data.response_var)
+  
+    '''
     scores_deterministic = compute_deterministic_metrics(posterior_mean, test_data.tas)
     scores_probabilistic = compute_probabilistic_metrics(posterior_dist, test_data.tas)
+    '''
 
     # Encapsulate scores into output dictionnary
     output = {**scores_deterministic, **scores_probabilistic}
+    
     return output
 
 
@@ -47,6 +60,7 @@ def compute_deterministic_metrics(prediction, groundtruth):
               'rmse': rmse.item(),
               'mae': mae.item(),
               'corr': corr}
+
     return output
 
 

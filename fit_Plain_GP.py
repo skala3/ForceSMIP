@@ -58,7 +58,7 @@ def make_model(cfg, data):
     X = torch.cat([data.scenarios.cum_emissions[:, 0, None], data.scenarios.emissions[:, 1:]], dim=-1)
     mu, sigma = X.mean(dim=0), X.std(dim=0)
     X = (X - mu) / sigma
-    y = (data.scenarios.tas - data.scenarios.mu_tas) / data.scenarios.sigma_tas
+    y = (data.scenarios.response_var - data.scenarios.mu_response_var) / data.scenarios.sigma_response_var
     model = ExactGP(X=X,
                     y=y,
                     mean=mean,
@@ -66,8 +66,8 @@ def make_model(cfg, data):
                     likelihood=likelihood,
                     mu=mu,
                     sigma=sigma,
-                    mu_targets=data.scenarios.mu_tas,
-                    sigma_targets=data.scenarios.sigma_tas)
+                    mu_targets=data.scenarios.mu_response_var,
+                    sigma_targets=data.scenarios.sigma_response_var)
     return model
 
 
@@ -102,8 +102,12 @@ if __name__ == "__main__":
 
     # Setup logging
     logging.basicConfig(level=logging.INFO)
+
     logging.info(f'Arguments: {args}\n')
     logging.info(f'Configuration file: {cfg}\n')
+
+    print("Arguments: ", args, "\n")
+    print("Configuration file: ", cfg, "\n")
 
     # Create output directory if doesn't exists
     os.makedirs(args['--o'], exist_ok=True)

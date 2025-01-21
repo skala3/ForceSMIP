@@ -8,7 +8,7 @@ Options:
   --o=<output_dir>                 Output directory.
   --device=<device_index>          Device to use [default: cpu]
 """
-import osa
+import os
 import yaml
 import logging
 from docopt import docopt

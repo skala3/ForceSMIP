@@ -13,9 +13,11 @@ dataset:
     - ssp126
     - ssp245
     - ssp370
-    - ssp585
+    #- ssp585
 
 
+
+response_var: pr
 
 # MODEL SPECIFICATIONS
 model:
