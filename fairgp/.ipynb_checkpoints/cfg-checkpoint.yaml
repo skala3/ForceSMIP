@@ -1,0 +1,14 @@
+dataset:
+  dirpath: data/
+  keys:
+  - historical
+  - ssp126
+  - ssp245
+  - ssp370
+  - ssp585
+evaluation: null
+model: null
+response_var: pr
+training:
+  lr: 0.1
+  n_epochs: 60
