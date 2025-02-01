@@ -1,10 +1,10 @@
-# FaIRGP: A Bayesian Energy Balance Model for Surface Temperatures Emulation
+# FaIRGP: A Bayesian Energy Balance Model for Global Precipitation Emulation
 
 <p align="center">
   <img width="35%" src="docs/img/fairgp-logo.png"/>
 </p>
 
-
+This project is part of my ongoing research at the Climate Analytics Lab at Scripps Institution of Oceanography, UC San Diego, under the leadership of Prof. Duncan Watson-Parris in collaboration with Shahine Bouabid (MIT).
         
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8180360.svg)](https://doi.org/10.5281/zenodo.8180360)
 
@@ -59,8 +59,6 @@ $ python evaluate_FaIR.py --cfg=config/FaIR.yaml --o=path/to/output/directory
 
 
 
-
-
 # Installation
 
 Code implemented in Python 3.8.0
@@ -79,16 +77,4 @@ Install dependencies
 $ (venv) pip install -r requirements.txt
 ```
 
-#### Reference
-```
-@article{bouabid2024fairgp,
-  title={FaIRGP: A Bayesian energy balance model for surface temperatures emulation},
-  author={Bouabid, Shahine and Sejdinovic, Dino and Watson-Parris, Duncan},
-  journal={Journal of Advances in Modeling Earth Systems},
-  volume={16},
-  number={6},
-  pages={e2023MS003926},
-  year={2024},
-  publisher={Wiley Online Library}
-}
 ```
